@@ -12,10 +12,19 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.locals.users = [{"name": "Quin"}, {"name": "Hill"}, {"name": "Andrew"}];
+
 app.get('/api/v1/users', (request, response) => {
-  const users = database('users').select()
-  return response(200).json(users)
-})
+  const users = app.locals.users;
+  return response.status(200).json(users);
+});
+
+app.post('/api/v1/users', (request, response) => {
+  const user = request.body;
+  app.locals.users.push(user);
+  return response.status(201).json(user);
+});
+
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
