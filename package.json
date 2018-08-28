@@ -11,7 +11,6 @@
   "author": "Andrew James <ajames20@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "babel-eslint": "8.2.6",
     "body-parser": "1.18.2",
     "express": "4.16.3",
     "knex": "0.15.2",
