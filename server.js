@@ -34,7 +34,7 @@ app.get('/api/v1/:id/favorites', (request, response) => {
 
   database('saved_routes').where('id', id).select()
   .then(favorites => {
-    if(favorites) {
+    if(favorites.length) {
       return response.status(200).json(favorites)
     }
     return response.status(404).json({error: '404: Resource not found'})
