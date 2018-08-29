@@ -63,6 +63,16 @@ describe('API routes', () => {
           done();
         });
     });
+
+    it('should return a 404 if no user-id present', done => {
+      chai.request(server)
+        .get(`/api/v1/90/favorites`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: Resource not found"}');
+          done();
+        });
+    });
   });
 
 });
