@@ -35,6 +35,8 @@ describe('API routes', () => {
           response.body[0].start_location.should.equal('Union Station T1');
           response.body[0].should.have.property('end_location');
           response.body[0].end_location.should.equal('40th & Colorado Station');
+          response.body[0].should.have.property('user_id');
+          response.body[0].user_id.should.equal(1);
           done();
         });
     });
