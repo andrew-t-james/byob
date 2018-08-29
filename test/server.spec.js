@@ -40,6 +40,29 @@ describe('API routes', () => {
           done();
         });
     });
-
   });
+
+  describe('GET /api/v1/:id/favorites', () => {
+    it('should return favorites based on a users id', done => {
+      chai.request(server)
+        .get(`/api/v1/3/favorites`)
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.length.should.equal(1);
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(3);
+          response.body[0].should.have.property('name');
+          response.body[0].name.should.equal('Hideout');
+          response.body[0].should.have.property('start_location');
+          response.body[0].start_location.should.equal('Central Park Station');
+          response.body[0].should.have.property('end_location');
+          response.body[0].end_location.should.equal('Union Station T1');
+          response.body[0].should.have.property('user_id');
+          response.body[0].user_id.should.equal(3);
+          done();
+        });
+    });
+  });
+
 });
