@@ -54,8 +54,6 @@ app.delete('/api/v1/users', (request, response) => {
 
 
 
-
-
 app.get('/api/v1/saved_routes', (request, response) => {
   database('saved_routes').select()
     .then(savedRoutes => response.status(200).json(savedRoutes))
