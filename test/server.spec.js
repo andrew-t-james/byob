@@ -39,6 +39,27 @@ describe('API routes', () => {
     });
   });
 
+  describe('POST /api/v1/users', () => {
+    it('should create a new user', done => {
+      chai.request(server)
+        .post('/api/v1/users')
+        .send({
+          first_name: 'Bob',
+          last_name: 'Loblaw'
+        })
+        .end(function(err, res) {
+          res.should.have.status(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.have.property('first_name');
+          res.body.first_name.should.equal('Bob');
+          res.body.should.have.property('last_name');
+          res.body.last_name.should.equal('Loblaw');
+          done();
+        });
+    });
+  });
+
   describe('GET /api/v1/favorites', () => {
     it('should return all favorites', done => {
       chai.request(server)
@@ -48,7 +69,7 @@ describe('API routes', () => {
           response.should.be.json;
           response.body.length.should.equal(30);
           response.body[0].should.have.property('id');
-          response.body[0].id.should.equal(1);
+          response.body[0].id.should.equal(2);
           response.body[0].should.have.property('name');
           response.body[0].name.should.equal('Home');
           response.body[0].should.have.property('start_location');
