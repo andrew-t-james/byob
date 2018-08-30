@@ -18,9 +18,8 @@ describe('API routes', () => {
             }));
       });
   });
-      
+
   describe('GET /api/v1/users', () => {
-    
     it('should return all users', done => {
       chai.request(server)
         .get('/api/v1/users')
@@ -64,7 +63,7 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/saved_routes/:user_id', () => {
-    it('should return favorites based on a users id', done => {
+    it('should return saved_routes based on a users id', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/3`)
         .end((err, response) => {
