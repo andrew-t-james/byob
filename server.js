@@ -13,7 +13,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/v1/users', (request, response) => {
-<<<<<<< HEAD
   database('users').select()
     .then((users) => (
       response.status(200).json(users)
@@ -33,7 +32,7 @@ app.post('/api/v1/users', (request, response) => {
     if (!user[requiredParameters]) {
       return response
         .status(422)
-        .send({error: `Expected format: { name: <String> }. 
+        .send({error: `Expected format: { name: <String> }.
         You're missing a "${requiredParameters}" property.`});
     }
   }
@@ -51,11 +50,6 @@ app.delete('/api/v1/users', (request, response) => {
     .then(user => user);
 });
 
-=======
-  const users = database('users').select();
-  return response(200).json(users);
-});
->>>>>>> Update naming conventions to match database schema
 
 
 
