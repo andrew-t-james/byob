@@ -74,11 +74,11 @@ app.get('/api/v1/saved_routes/:user_id', (request, response) => {
 });
 
 const savedRoutesPostErrorHandling = (request, response, next) => {
+  const expectedParams = ['name', 'start_location', 'end_location'];
   const newRoute = {
     ...request.body
   };
 
-  const expectedParams = ['name', 'start_location', 'end_location'];
 
   for (const requiredParams of expectedParams) {
     if (!newRoute[requiredParams]) {
@@ -92,14 +92,16 @@ const savedRoutesPostErrorHandling = (request, response, next) => {
 
 
 app.post('/api/v1/saved_routes/:user_id', savedRoutesPostErrorHandling, (request, response) => {
-  const route = request.body;
+  const routeToSave = request.body;
   const { user_id } = request.params;
+  console.log('user_id', user_id);
 
-  database('saved_routes').where('user_id', user_id).insert(route, '*')
+  database('saved_routes').select('users').where('user_id', user_id).insert(routeToSave, '*')
     .then(newRoute => {
+      console.log(newRoute);
       return response.status(201).json(newRoute);
     })
-    .catch(error => response.status(500).json({ error: `A user with id: ${error} does not exist.` }));
+    .catch(error => response.status(500).json({ error: 'Internal Server Error' }));
 });
 
 app.listen(app.get('port'), () => {
