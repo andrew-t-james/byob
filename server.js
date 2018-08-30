@@ -81,6 +81,35 @@ app.get('/api/v1/saved_routes/:user_id', (request, response) => {
     .catch(() => response.status(500).send({'Error':'500: Internal server error.'}));
 });
 
+const savedRoutesPostErrorHandling = (request, response, next) => {
+  const newRoute = {
+    ...request.body
+  };
+
+  const expectedParams = ['name', 'start_location', 'end_location'];
+
+  for (const requiredParams of expectedParams) {
+    if (!newRoute[requiredParams]) {
+      return response.status(422).json({
+        error: `Expected format: { property: <String> }. You're missing a ${requiredParams} property.`
+      });
+    }
+  }
+  next();
+};
+
+
+app.post('/api/v1/saved_routes/:user_id', savedRoutesPostErrorHandling, (request, response) => {
+  const route = request.body;
+  const { user_id } = request.params;
+
+  database('saved_routes').where('user_id', user_id).insert(route, '*')
+    .then(newRoute => {
+      return response.status(201).json(newRoute);
+    })
+    .catch(error => response.status(500).json({ error: `A user with id: ${error} does not exist.` }));
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
