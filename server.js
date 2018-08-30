@@ -37,9 +37,9 @@ app.post('/api/v1/users', (request, response) => {
     }
   }
   database('users').insert(user, 'id')
-    .then(user => (
-      response.status(201).json({ id: user[0] })
-    ))
+    .then(user => {
+      return response.status(201).json({id: user[0]});
+    })
     .catch(error => (
       response.status(500).json({ error })
     ));
