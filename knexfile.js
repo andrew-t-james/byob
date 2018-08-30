@@ -15,7 +15,7 @@ module.exports = {
   },
 
   test: {
-    client: 'postgresql',
+    client: 'pg',
     connection: 'postgres://localhost/rtd_db_test',
     migrations: {
       directory: './db/migrations'
