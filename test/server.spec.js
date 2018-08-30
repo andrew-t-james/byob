@@ -18,9 +18,8 @@ describe('API routes', () => {
             }));
       });
   });
-      
+
   describe('GET /api/v1/users', () => {
-    
     it('should return all users', done => {
       chai.request(server)
         .get('/api/v1/users')
@@ -43,7 +42,7 @@ describe('API routes', () => {
   describe('GET /api/v1/favorites', () => {
     it('should return all favorites', done => {
       chai.request(server)
-        .get('/api/v1/favorites')
+        .get('/api/v1/saved_routes')
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -63,10 +62,10 @@ describe('API routes', () => {
     });
   });
 
-  describe('GET /api/v1/:id/favorites', () => {
-    it('should return favorites based on a users id', done => {
+  describe('GET /api/v1/saved_routes/:user_id', () => {
+    it('should return saved_routes based on a users id', done => {
       chai.request(server)
-        .get(`/api/v1/3/favorites`)
+        .get(`/api/v1/saved_routes/3`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -85,9 +84,9 @@ describe('API routes', () => {
         });
     });
 
-    it('should return a 404 if no user-id present', done => {
+    it('should return a 404 if no user-id present in database', done => {
       chai.request(server)
-        .get(`/api/v1/90/favorites`)
+        .get(`/api/v1/saved_routes/90`)
         .end((err, response) => {
           response.should.have.status(404);
           response.error.text.should.equal('{"error":"404: Resource not found"}');

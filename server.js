@@ -32,7 +32,7 @@ app.post('/api/v1/users', (request, response) => {
     if (!user[requiredParameters]) {
       return response
         .status(422)
-        .send({error: `Expected format: { name: <String> }. 
+        .send({error: `Expected format: { name: <String> }.
         You're missing a "${requiredParameters}" property.`});
     }
   }
@@ -54,26 +54,53 @@ app.delete('/api/v1/users', (request, response) => {
 
 
 
-
-
-app.get('/api/v1/favorites', (request, response) => {
+app.get('/api/v1/saved_routes', (request, response) => {
   database('saved_routes').select()
-  .then(favorites => response.status(200).json(favorites))
-  .catch(error => response.status(500).json({ error }));
+    .then(savedRoutes => response.status(200).json(savedRoutes))
+    .catch(error => response.status(500).json({ error }));
 });
 
-app.get('/api/v1/:id/favorites', (request, response) => {
-  const { id } = request.params;
+app.get('/api/v1/saved_routes/:user_id', (request, response) => {
+  const { user_id } = request.params;
 
-  database('saved_routes').where('id', id).select()
-  .then(favorites => {
-    if(favorites.length) {
-      return response.status(200).json(favorites)
+  database('saved_routes').where('user_id', user_id).select()
+    .then(favorites => {
+      if (favorites.length) {
+        return response.status(200).json(favorites);
+      }
+      return response.status(404).json({error: '404: Resource not found'});
+    })
+    .catch(() => response.status(500).send({'Error':'500: Internal server error.'}));
+});
+
+const savedRoutesPostErrorHandling = (request, response, next) => {
+  const newRoute = {
+    ...request.body
+  };
+
+  const expectedParams = ['name', 'start_location', 'end_location'];
+
+  for (const requiredParams of expectedParams) {
+    if (!newRoute[requiredParams]) {
+      return response.status(422).json({
+        error: `Expected format: { property: <String> }. You're missing a ${requiredParams} property.`
+      });
     }
-    return response.status(404).json({error: '404: Resource not found'})
-  })
-  .catch(() => response.status(500).send({'Error':'500: Internal server error.'}))
-})
+  }
+  next();
+};
+
+
+app.post('/api/v1/saved_routes/:user_id', savedRoutesPostErrorHandling, (request, response) => {
+  const route = request.body;
+  const { user_id } = request.params;
+
+  database('saved_routes').where('user_id', user_id).insert(route, '*')
+    .then(newRoute => {
+      return response.status(201).json(newRoute);
+    })
+    .catch(error => response.status(500).json({ error: `A user with id: ${error} does not exist.` }));
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
