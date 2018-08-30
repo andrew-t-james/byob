@@ -18,6 +18,27 @@ describe('API routes', () => {
             }));
       });
   });
+      
+  describe('GET /api/v1/users', () => {
+    
+    it('should return all users', done => {
+      chai.request(server)
+        .get('/api/v1/users')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.should.be.json;
+          res.body.should.be.a('array');
+          res.body.length.should.equal(30);
+          res.body[0].should.have.property('first_name');
+          res.body[0].first_name.should.equal('Ty');
+          res.body[0].should.have.property('last_name');
+          res.body[0].last_name.should.equal('Tanic');
+          res.body[0].should.have.property('id');
+          res.body[0].id.should.equal(1);
+          done();
+        });
+    });
+  });
 
   describe('GET /api/v1/favorites', () => {
     it('should return all favorites', done => {
