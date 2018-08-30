@@ -51,10 +51,8 @@ describe('API routes', () => {
           res.should.have.status(201);
           res.should.be.json;
           res.body.should.be.a('object');
-          res.body.should.have.property('first_name');
-          res.body.first_name.should.equal('Bob');
-          res.body.should.have.property('last_name');
-          res.body.last_name.should.equal('Loblaw');
+          res.body.should.have.property('id');
+          res.body.id.should.equal(31)
           done();
         });
     });
@@ -115,5 +113,4 @@ describe('API routes', () => {
         });
     });
   });
-
 });
