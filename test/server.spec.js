@@ -114,7 +114,7 @@ describe('API routes', () => {
     });
   });
 
-  describe('POST /api/v1/saved_routes', () => {
+  describe('POST /api/v1/saved_routes/:user_id', () => {
     it('should save and return a new saved route', done => {
       chai.request(server)
         .post('/api/v1/saved_routes/1')
@@ -136,6 +136,46 @@ describe('API routes', () => {
           response.body[0].end_location.should.equal('Some other train stop');
           response.body[0].should.have.property('user_id');
           response.body[0].user_id.should.equal(1);
+          done();
+        });
+    });
+  });
+
+  describe('PATCH /api/v1/saved_routes/:saved_route_id', () => {
+    it('should update a saved_route by id', done => {
+      chai.request(server)
+        .patch('/api/v1/saved_routes/1')
+        .send({
+          start_location: 'Some New Route'
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          response.body.should.equal(1);
+        });
+
+      chai.request(server)
+        .get('/api/v1/saved_routes/1')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body[0].should.have.property('name');
+          response.body[0].name.should.equal('Home');
+          response.body[0].should.have.property('start_location');
+          response.body[0].start_location.should.equal('Some New Route');
+          done();
+        });
+    });
+
+    it('should return an error if id incorrect', done => {
+      chai.request(server)
+        .patch('/api/v1/saved_routes/10000')
+        .send({
+          start_location: 'My new Place'
+        })
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.error.text.should.equal('{"error":"422: Please provide a valid route id."}');
           done();
         });
     });
