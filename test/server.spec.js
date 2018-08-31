@@ -123,7 +123,7 @@ describe('API routes', () => {
           start_location: 'Some train stop',
           end_location: 'Some other train stop'
         })
-        .then(response => {
+        .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
           response.body[0].should.have.property('id');
@@ -136,6 +136,16 @@ describe('API routes', () => {
           response.body[0].end_location.should.equal('Some other train stop');
           response.body[0].should.have.property('user_id');
           response.body[0].user_id.should.equal(1);
+          done();
+        });
+    });
+
+    it('should return a 404 if no user_id present in database', done => {
+      chai.request(server)
+        .get(`/api/v1/saved_routes/90`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: Resource not found"}');
           done();
         });
     });
@@ -167,7 +177,7 @@ describe('API routes', () => {
         });
     });
 
-    it('should return an error if id incorrect', done => {
+    it('should return an error if saved_route_id incorrect', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/10000')
         .send({
