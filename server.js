@@ -92,16 +92,20 @@ const savedRoutesPostErrorHandling = (request, response, next) => {
 
 
 app.post('/api/v1/saved_routes/:user_id', savedRoutesPostErrorHandling, (request, response) => {
-  const routeToSave = request.body;
-  const { user_id } = request.params;
-  console.log('user_id', user_id);
+  const routeToSave = {
+    ...request.body,
+    user_id: request.params.user_id
+  };
 
-  database('saved_routes').select('users').where('user_id', user_id).insert(routeToSave, '*')
+  database('saved_routes').insert(routeToSave, '*')
     .then(newRoute => {
-      console.log(newRoute);
+      if (!newRoute[0].user_id) {
+        return response.status(400).json({error: 'Please provide a correct id of a user'});
+
+      }
       return response.status(201).json(newRoute);
     })
-    .catch(error => response.status(500).json({ error: 'Internal Server Error' }));
+    .catch(error => response.status(500).json({ error: 'Internal Server Error Unable to Process Request' }));
 });
 
 app.listen(app.get('port'), () => {
