@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.locals.title = 'BYOB';
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.set('secretKey', process.env.SECRET_KEY);
 
 app.get('/api/v1/users', (request, response) => {
   database('users').select()
@@ -133,6 +135,26 @@ app.delete('/api/v1/saved_routes/:saved_route_id', (request, response) => {
       return response.status(200).json(foundId);
     })
     .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
+});
+
+
+app.post('/api/v1/authorization', (request, response) => {
+  const user = request.body;
+
+  for (const requiredParam of ['email']) {
+    if (!user[requiredParam]) {
+      return response.status(422).json({
+        error: `Expected format: { property: <String> }. You're missing a ${requiredParam} property.`
+      });
+    }
+  }
+
+  const token = jwt.sign({
+    user
+  }, app.get('secretKey'), { expiresIn: '48h' });
+
+
+  response.status(201).json({token});
 });
 
 app.listen(app.get('port'), () => {
