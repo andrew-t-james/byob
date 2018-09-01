@@ -123,10 +123,11 @@ app.patch('/api/v1/saved_routes/:saved_route_id', (request, response) => {
 
 app.delete('/api/v1/saved_routes/:saved_route_id', (request, response) => {
   const { saved_route_id } = request.params;
+
   database('saved_routes').where('id', saved_route_id).del()
     .then(foundId => {
       if (!foundId) {
-        return response.status(422).json({error: '422: No entry exists with that id . .'});
+        return response.status(422).json({error: '422: No entry exists with that id .'});
       }
       return response.status(200).json(foundId);
     })
