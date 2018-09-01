@@ -78,7 +78,7 @@ app.get('/api/v1/saved_routes', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-app.get('/api/v1/saved_routes/:user_id', (request, response) => {
+app.get('/api/v1/saved_routes/:user_id', checkAuth, (request, response) => {
   const { user_id } = request.params;
 
   database('saved_routes').where('user_id', user_id).select()
@@ -108,7 +108,7 @@ const savedRoutesErrorHandling = (request, response, next) => {
 };
 
 
-app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, (request, response) => {
+app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, checkAuth, (request, response) => {
   const routeToSave = {
     ...request.body,
     user_id: request.params.user_id
@@ -125,7 +125,7 @@ app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, (request, re
     .catch(error => response.status(500).json({ error: 'Internal Server Error Unable to Process Request' }));
 });
 
-app.patch('/api/v1/saved_routes/:saved_route_id', (request, response) => {
+app.patch('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response) => {
   const { saved_route_id } = request.params;
 
   database('saved_routes').where('id', saved_route_id).update(request.body)
