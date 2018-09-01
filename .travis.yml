@@ -1,16 +1,16 @@
 language: node_js
 node_js:
-- node
+  - node
 services:
-- postgresql
+  - postgresql
 before_script:
-- psql -c 'CREATE DATABASE rtd_db_test;' -U postgres
+  - psql -c 'CREATE DATABASE rtd_db_test;' -U postgres
 notifications:
   email: false
 deploy:
   provider: heroku
   api_key:
-    secure: bqcHkWHFppm471btGWBj+5wyxvg8OIaVIcQVeb3uZgYrw6AgMgiO3CG9xpHAkF88BguEFi9mgFIymQEjf2XhlccdaHZsc+ttPlvJVNI0xZeUNTPpQPD31Nk6yXEw5AcNnJPJWhp22NECRKukg6c3y1stvFq3MLVV2itbgEl98FDirbCmHb43z9Qe0j+Pk/u0EhEMxdxgpifwaD7j6wfGrWP3oHOgxkUYd3iAI5z+hvjvZLCFY+6lxBFSCHO4RcdS9RQR1YNxRIF0BTyGLPJuM7xtr5Cz6TPtmt5FeHayWCCsAnTA4u3xhmyXNU4jo85T6J71PIvB05LMhzgdifbB2/eKatSc3KEMxLPggdm1Udz99a7ikCsqqkxigbyBPkteevlQYm6J94594KRmXaHoSHaSWIBClH6dRgHhwvwYHl1dt8WW8inXLFWFDb82mXjOwXvTAweVFfZETaBGmXbxW+aX3HEHTof+Rin6wkcwjdtfTN4XfwyWZOEu+TN+YdWK9ExEO8P8XZqnulxLW6xMwmEjFLkQDWh5YDdKAdfIXZRL/V0gEipbajv2ciAtLxDSk4ncwvrhXCOYIoChLRawA6qBrIKRSzD0s/xBQw3r8gBuBCZYK8oa4yaGAPW/Vewoq53zTe+aBkIuh97yG9gpKGpVkUm885Zpfpu/VYcJKo4=
+    secure: eufjC2ZQtl0UJBGmeX6B+GmBAgCVUXDr89QXXPP0m1UqXLwlRzrxdZ39CDLqGN8FKdPbqvmR0EwOMXPQFuIhF3sh3XY+J8ZskjZW08Urg2JyJUbkdKVpTCWWS6HJJOmQIcDal+JppJmaxWSxd0Ui2KcHSA4AaTD5tf8/VV7btU3e1YXZboq7cif/E9FS6TxIyw1bS5wayH+mN9TOQikWxRkUh4nRyYm3pkHiV69Aoq2U2de9adQleS2zJqnJqctteM8rbUz/GfLsZliqDGNLDml2o6SCYze7uRXqXn51/zTlTagPRk4Rp7Ewsv86ZIh9/BPWrhg1OdTQYXldZOnq1sYr/iTVVuwbp2063PXy807xbawSgotpUwhyvAsitEsYmET0vBWr09sdNOUkjj8y08yJ5y27jbWi47h2mMTkMom0KURVlUreN/AVtdz9dj4X4ynVDss87OZdqDUQPMIoPCEmy/CYcMT6X6rOQDrg/J1lFh9o+g3VklE5GTTj3OfmOCeJy0AC8z6WL8p8LlAUAF5O7kNoeMBz+52tJBBZhD6/RVD392fFaHyolJHTHq8MVU3QJd2ct+k51oUnegE0ws+F/gxLYpozPdSd54vOf7zQsoWRwYOsSBdbN039xNnsm4VNsxEx/78XiZTjUTJ1iZt/cVIayDXMgvKbHGwck7M=
   app: byob-2018
   on:
     repo: andrew-t-james/byob
