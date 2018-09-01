@@ -222,4 +222,33 @@ describe('API routes', () => {
         });
     });
   });
+
+  describe('POST /api/v1/authorization', () => {
+    it('should send back a jwt if user email present', done => {
+      chai.request(server)
+        .post('/api/v1/authorization')
+        .send({
+          email: 'some-email@mail.com'
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          response.body.should.have.property('token');
+          done();
+        });
+    });
+
+    it('should return an 422 error if the email does not exist', done => {
+      chai.request(server)
+        .post('/api/v1/authorization')
+        .send({
+          name: 'some wrong thing here'
+        })
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.error.text.should.equal('{"error":"Expected format: { property: <String> }. You\'re missing a email property."}');
+          done();
+        });
+    });
+  });
 });
