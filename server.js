@@ -118,7 +118,19 @@ app.patch('/api/v1/saved_routes/:saved_route_id', (request, response) => {
       }
       return response.status(201).json(updated);
     })
-    .catch(error => response.status(500).json({error: '422: Internal Server Error'}));
+    .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
+});
+
+app.delete('/api/v1/saved_routes/:saved_route_id', (request, response) => {
+  const { saved_route_id } = request.params;
+  database('saved_routes').where('id', saved_route_id).del()
+    .then(foundId => {
+      if (!foundId) {
+        return response.status(422).json({error: '422: No entry exists with that id . .'});
+      }
+      return response.status(200).json(foundId);
+    })
+    .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
 });
 
 app.listen(app.get('port'), () => {
