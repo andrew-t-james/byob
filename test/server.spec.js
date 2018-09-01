@@ -183,6 +183,7 @@ describe('API routes', () => {
         .send({
           start_location: 'My new Place'
         })
+
         .end((err, response) => {
           response.should.have.status(422);
           response.error.text.should.equal('{"error":"422: Please provide a valid route id."}');
@@ -207,6 +208,16 @@ describe('API routes', () => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.length.should.equal(30);
+          done();
+        });
+    });
+
+    it('should return an error if the id does not exist', done => {
+      chai.request(server)
+        .delete('/api/v1/saved_routes/3000')
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.error.text.should.equal('{"error":"422: No entry exists with that id."}');
           done();
         });
     });
