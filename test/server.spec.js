@@ -4,6 +4,7 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const knex = require('../db/knex');
+const token = process.env.JWT_TEST_TOKEN;
 
 chai.use(chaiHttp);
 
@@ -196,6 +197,7 @@ describe('API routes', () => {
     it('should delete a saved_route by id', done => {
       chai.request(server)
         .delete('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -215,6 +217,7 @@ describe('API routes', () => {
     it('should return an error if the id does not exist', done => {
       chai.request(server)
         .delete('/api/v1/saved_routes/3000')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(422);
           response.error.text.should.equal('{"error":"422: No entry exists with that id."}');
