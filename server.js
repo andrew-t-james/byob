@@ -15,6 +15,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('secretKey', process.env.SECRET_KEY);
 
+const checkAuth = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+
+  if (!token) {
+    return res.status(403).json({'error': 'You must be authorized to hit this endpoint.'});
+  }
+
+  jwt.verify(token, app.get('secretKey'), (err, decode) => {
+    if (err) {
+      return res.status(403).json({'error': 'Invalid token.'});
+    }
+    next();
+  });
+};
+
 app.get('/api/v1/users', (request, response) => {
   database('users').select()
     .then((users) => (
@@ -82,7 +97,6 @@ const savedRoutesErrorHandling = (request, response, next) => {
     ...request.body
   };
 
-
   for (const requiredParams of expectedParams) {
     if (!newRoute[requiredParams]) {
       return response.status(422).json({
@@ -124,7 +138,7 @@ app.patch('/api/v1/saved_routes/:saved_route_id', (request, response) => {
     .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
 });
 
-app.delete('/api/v1/saved_routes/:saved_route_id', (request, response) => {
+app.delete('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response) => {
   const { saved_route_id } = request.params;
 
   database('saved_routes').where('id', saved_route_id).del()
