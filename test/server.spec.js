@@ -86,6 +86,7 @@ describe('API routes', () => {
     it('should return saved_routes based on a users id', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/3`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -107,6 +108,7 @@ describe('API routes', () => {
     it('should return a 404 if no user-id present in database', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/90`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(404);
           response.error.text.should.equal('{"error":"404: Resource not found"}');
@@ -119,6 +121,7 @@ describe('API routes', () => {
     it('should save and return a new saved route', done => {
       chai.request(server)
         .post('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'My new Route',
           start_location: 'Some train stop',
@@ -144,6 +147,7 @@ describe('API routes', () => {
     it('should return a 404 if no user_id present in database', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/90`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(404);
           response.error.text.should.equal('{"error":"404: Resource not found"}');
@@ -156,6 +160,7 @@ describe('API routes', () => {
     it('should update a saved_route by id', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           start_location: 'Some New Route'
         })
@@ -167,6 +172,7 @@ describe('API routes', () => {
 
       chai.request(server)
         .get('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -181,6 +187,7 @@ describe('API routes', () => {
     it('should return an error if saved_route_id incorrect', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/10000')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           start_location: 'My new Place'
         })
