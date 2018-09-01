@@ -190,4 +190,25 @@ describe('API routes', () => {
         });
     });
   });
+
+  describe('DELETE /api/v1/saved_routes/:saved_route_id', () => {
+    it('should delete a saved_route by id', done => {
+      chai.request(server)
+        .delete('/api/v1/saved_routes/1')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.equal(1);
+        });
+
+      chai.request(server)
+        .get('/api/v1/saved_routes')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.length.should.equal(30);
+          done();
+        });
+    });
+  });
 });
