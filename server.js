@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+const queries = require('./db/queries');
+
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
@@ -45,9 +47,19 @@ app.post('/api/v1/users', (request, response) => {
     ));
 });
 
-app.delete('/api/v1/users', (request, response) => {
-  database('users').where('id', request.params.id).del()
-    .then(user => user);
+app.delete('/api/v1/users/:id', (request, response, next) => {
+  queries.getSingle(request.params.id)
+    .then((user) => {
+      queries.deleteUser(request.params.id)
+        .then(() => {
+          response.status(200).json(user);
+        })
+        .catch((error) => {
+          next(error);
+        });
+    }).catch((error) => {
+      next(error);
+    });
 });
 
 
