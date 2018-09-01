@@ -48,6 +48,7 @@ app.post('/api/v1/users', (request, response) => {
 });
 
 app.delete('/api/v1/users/:id', (request, response, next) => {
+  console.log(request.params.id)
   queries.getSingle(request.params.id)
     .then((user) => {
       queries.deleteUser(request.params.id)
