@@ -4,6 +4,7 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const knex = require('../db/knex');
+const token = process.env.JWT_TEST_TOKEN;
 
 chai.use(chaiHttp);
 
@@ -85,6 +86,7 @@ describe('API routes', () => {
     it('should return saved_routes based on a users id', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/3`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -106,6 +108,7 @@ describe('API routes', () => {
     it('should return a 404 if no user-id present in database', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/90`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(404);
           response.error.text.should.equal('{"error":"404: Resource not found"}');
@@ -118,6 +121,7 @@ describe('API routes', () => {
     it('should save and return a new saved route', done => {
       chai.request(server)
         .post('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'My new Route',
           start_location: 'Some train stop',
@@ -143,6 +147,7 @@ describe('API routes', () => {
     it('should return a 404 if no user_id present in database', done => {
       chai.request(server)
         .get(`/api/v1/saved_routes/90`)
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(404);
           response.error.text.should.equal('{"error":"404: Resource not found"}');
@@ -155,6 +160,7 @@ describe('API routes', () => {
     it('should update a saved_route by id', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           start_location: 'Some New Route'
         })
@@ -166,6 +172,7 @@ describe('API routes', () => {
 
       chai.request(server)
         .get('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -180,6 +187,7 @@ describe('API routes', () => {
     it('should return an error if saved_route_id incorrect', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/10000')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           start_location: 'My new Place'
         })
@@ -196,6 +204,7 @@ describe('API routes', () => {
     it('should delete a saved_route by id', done => {
       chai.request(server)
         .delete('/api/v1/saved_routes/1')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -215,9 +224,39 @@ describe('API routes', () => {
     it('should return an error if the id does not exist', done => {
       chai.request(server)
         .delete('/api/v1/saved_routes/3000')
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(422);
           response.error.text.should.equal('{"error":"422: No entry exists with that id."}');
+          done();
+        });
+    });
+  });
+
+  describe('POST /api/v1/authorization', () => {
+    it('should send back a jwt if user email present', done => {
+      chai.request(server)
+        .post('/api/v1/authorization')
+        .send({
+          email: 'some-email@mail.com'
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          response.body.should.have.property('token');
+          done();
+        });
+    });
+
+    it('should return an 422 error if the email does not exist', done => {
+      chai.request(server)
+        .post('/api/v1/authorization')
+        .send({
+          name: 'some wrong thing here'
+        })
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.error.text.should.equal('{"error":"Expected format: { property: <String> }. You\'re missing a email property."}');
           done();
         });
     });

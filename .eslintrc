@@ -49,7 +49,7 @@
         "after": true
       }
     ],
-    "max-len": ["warn", 80],
+    "max-len": ["warn", 120],
     "no-duplicate-imports": "error",
     "id-length": "error",
     "id-blacklist": [
