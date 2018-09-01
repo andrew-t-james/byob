@@ -73,7 +73,7 @@ app.get('/api/v1/saved_routes/:user_id', (request, response) => {
     .catch(() => response.status(500).send({'Error':'500: Internal server error.'}));
 });
 
-const savedRoutesPostErrorHandling = (request, response, next) => {
+const savedRoutesErrorHandling = (request, response, next) => {
   const expectedParams = ['name', 'start_location', 'end_location'];
   const newRoute = {
     ...request.body
@@ -91,17 +91,47 @@ const savedRoutesPostErrorHandling = (request, response, next) => {
 };
 
 
-app.post('/api/v1/saved_routes/:user_id', savedRoutesPostErrorHandling, (request, response) => {
-  const routeToSave = request.body;
-  const { user_id } = request.params;
-  console.log('user_id', user_id);
+app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, (request, response) => {
+  const routeToSave = {
+    ...request.body,
+    user_id: request.params.user_id
+  };
 
-  database('saved_routes').select('users').where('user_id', user_id).insert(routeToSave, '*')
+  database('saved_routes').insert(routeToSave, '*')
     .then(newRoute => {
-      console.log(newRoute);
+      if (!newRoute[0].user_id) {
+        return response.status(400).json({error: 'Please provide a correct user_id'});
+
+      }
       return response.status(201).json(newRoute);
     })
-    .catch(error => response.status(500).json({ error: 'Internal Server Error' }));
+    .catch(error => response.status(500).json({ error: 'Internal Server Error Unable to Process Request' }));
+});
+
+app.patch('/api/v1/saved_routes/:saved_route_id', (request, response) => {
+  const { saved_route_id } = request.params;
+
+  database('saved_routes').where('id', saved_route_id).update(request.body)
+    .then(updated => {
+      if (!updated) {
+        return response.status(422).json({error: '422: Please provide a valid route id.'});
+      }
+      return response.status(201).json(updated);
+    })
+    .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
+});
+
+app.delete('/api/v1/saved_routes/:saved_route_id', (request, response) => {
+  const { saved_route_id } = request.params;
+
+  database('saved_routes').where('id', saved_route_id).del()
+    .then(foundId => {
+      if (!foundId) {
+        return response.status(422).json({error: '422: No entry exists with that id.'});
+      }
+      return response.status(200).json(foundId);
+    })
+    .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
 });
 
 app.listen(app.get('port'), () => {
