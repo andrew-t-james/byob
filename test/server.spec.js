@@ -24,17 +24,47 @@ describe('API routes', () => {
     it('should return all users', done => {
       chai.request(server)
         .get('/api/v1/users')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.json;
-          res.body.should.be.a('array');
-          res.body.length.should.equal(30);
-          res.body[0].should.have.property('first_name');
-          res.body[0].first_name.should.equal('Ty');
-          res.body[0].should.have.property('last_name');
-          res.body[0].last_name.should.equal('Tanic');
-          res.body[0].should.have.property('id');
-          res.body[0].id.should.equal(1);
+
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body.length.should.equal(30);
+          response.body[0].should.have.property('first_name');
+          response.body[0].first_name.should.equal('Ty');
+          response.body[0].should.have.property('last_name');
+          response.body[0].last_name.should.equal('Tanic');
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(1);
+          done();
+        });
+    });
+  });
+
+  describe('GET /api/v1/users/:id', () => {
+    it('should return a single user', done => {
+      chai.request(server)
+        .get('/api/v1/users/1')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body[0].should.have.property('first_name');
+          response.body[0].first_name.should.equal('Ty');
+          response.body[0].should.have.property('last_name');
+          response.body[0].last_name.should.equal('Tanic');
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(1);
+          done();
+        });
+    });
+
+    it('should return a 404 if the id is not present in database', done => {
+      chai.request(server)
+        .get(`/api/v1/users/90`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: User not found"}');
           done();
         });
     });
@@ -48,12 +78,37 @@ describe('API routes', () => {
           first_name: 'Bob',
           last_name: 'Loblaw'
         })
-        .end(function(err, res) {
-          res.should.have.status(201);
-          res.should.be.json;
-          res.body.should.be.a('object');
-          res.body.should.have.property('id');
-          res.body.id.should.equal(31);
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          response.body.should.be.a('object');
+          response.body.should.have.property('id');
+          response.body.id.should.equal(31);
+          done();
+        });
+    });
+
+    it('should return a 404 if id is not present in database', done => {
+      chai.request(server)
+        .get(`/api/v1/users/90`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: User not found"}');
+          done();
+        });
+    });
+  });
+
+  describe('PATCH /api/v1/users/:id', () => {
+    it('should patch a users data', done => {
+      chai.request(server)
+        .patch('/api/v1/users/1')
+        .send({
+          first_name: 'Tyler'
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
           done();
         });
     });
