@@ -61,7 +61,8 @@ JWT not required.
 ```
 {
  headers: {
-   authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoibmV3bWFpbGxAbWFpbC5jb20ifSwiaWF0IjoxNTM1OTA1NzA0LCJleHAiOjE1MzYwNzg1MDR9.qbm6hfCCxmNZut7q7CeaOzdTRp0dEG_WM4xE7dsFGcs"
+   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoibmV3bWFpbGxAbWFpbC5jb20ifSwiaWF0IjoxNTM1OTA1NzA0LCJleHAiOjE1MzYwNzg1MDR9.qbm6hfCCxmNZut7q7CeaOzdTRp0dEG_WM4xE7dsFGcs",
+   "Content-Type: "application/json"
  },
  body: {
    email: "someone@email.com"
