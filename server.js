@@ -50,7 +50,7 @@ app.get('/api/v1/users/:id', (request, response) => {
 
   database('users').where('id', id).select()
     .then(user => {
-      if (user) {
+      if (user.length) {
         return response.status(200).json(user);
       }
       return response.status(404).json({error: '404: User not found'});
@@ -69,7 +69,7 @@ app.post('/api/v1/users', (request, response) => {
   ]) {
     if (!user[requiredParameters]) {
       return response
-        .status(422)
+        .status(404)
         .send({error: `Expected format: { name: <String> }.
         You're missing a "${requiredParameters}" property.`});
     }
@@ -83,7 +83,7 @@ app.post('/api/v1/users', (request, response) => {
     ));
 });
 
-app.patch('/api/vi/users/:id', (request, response) => {
+app.patch('/api/v1/users/:id', (request, response) => {
   const { id } = request.params;
 
   database('users').where('id', id).update(request.body)

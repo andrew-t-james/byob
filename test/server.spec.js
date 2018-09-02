@@ -58,20 +58,19 @@ describe('API routes', () => {
           done();
         });
     });
+
+    it('should return a 404 if the id is not present in database', done => {
+      chai.request(server)
+        .get(`/api/v1/users/90`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: User not found"}');
+          done();
+        });
+    });
   });
 
   describe('POST /api/v1/users', () => {
-    beforeEach(done => {
-      knex.migrate.rollback()
-        .then(() => {
-          knex.migrate.latest()
-            .then(() => knex.seed.run()
-              .then(() => {
-                done();
-              }));
-        });
-    });
-
     it('should create a new user', done => {
       chai.request(server)
         .post('/api/v1/users')
@@ -85,6 +84,16 @@ describe('API routes', () => {
           response.body.should.be.a('object');
           response.body.should.have.property('id');
           response.body.id.should.equal(31);
+          done();
+        });
+    });
+
+    it('should return a 404 if id is not present in database', done => {
+      chai.request(server)
+        .get(`/api/v1/users/90`)
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.error.text.should.equal('{"error":"404: User not found"}');
           done();
         });
     });
