@@ -215,10 +215,11 @@ describe('API routes', () => {
     it('should update a saved_route by id', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/1')
-        .set('Authorization', `Bearer ${token}`)
         .send({
-          start_location: 'Some New Route'
+          start_location: 'Some New Route',
+          email: "newmaill@turing.io"
         })
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
@@ -227,6 +228,9 @@ describe('API routes', () => {
 
       chai.request(server)
         .get('/api/v1/saved_routes/1')
+        .send({
+          email: "newmaill@turing.io"
+        })
         .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
@@ -242,11 +246,11 @@ describe('API routes', () => {
     it('should return an error if saved_route_id incorrect', done => {
       chai.request(server)
         .patch('/api/v1/saved_routes/10000')
-        .set('Authorization', `Bearer ${token}`)
         .send({
+          email: "newmaill@turing.io",
           start_location: 'My new Place'
         })
-
+        .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(422);
           response.error.text.should.equal('{"error":"422: Please provide a valid route id."}');
@@ -259,6 +263,10 @@ describe('API routes', () => {
     it('should delete a saved_route by id', done => {
       chai.request(server)
         .delete('/api/v1/saved_routes/1')
+        .send({
+          email: "newmaill@turing.io",
+          app_name: "my new app"
+        })
         .set('Authorization', `Bearer ${token}`)
         .end((err, response) => {
           response.should.have.status(200);
@@ -293,7 +301,8 @@ describe('API routes', () => {
       chai.request(server)
         .post('/api/v1/authorization')
         .send({
-          email: 'some-email@mail.com'
+          email: "newmaill@turing.io",
+          app_name: "my new app"
         })
         .end((err, response) => {
           response.should.have.status(201);
@@ -307,7 +316,7 @@ describe('API routes', () => {
       chai.request(server)
         .post('/api/v1/authorization')
         .send({
-          name: 'some wrong thing here'
+          app_name: "my new app"
         })
         .end((err, response) => {
           response.should.have.status(422);
