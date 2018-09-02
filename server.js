@@ -178,7 +178,6 @@ app.delete('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response
 });
 
 app.post('/api/v1/authorization', (request, response) => {
-  console.log(request.body);
   const user = request.body;
 
   for (const requiredParam of ['email']) {
