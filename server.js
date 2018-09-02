@@ -155,7 +155,7 @@ app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, checkAuth, (
       }
       return response.status(201).json(newRoute);
     })
-    .catch(error => response.status(500).json({ error: 'Internal Server Error Unable to Process Request' }));
+    .catch(error => response.status(500).json({ error: `Internal Server Error: ${error}`}));
 });
 
 app.patch('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response) => {
@@ -210,6 +210,7 @@ app.post('/api/v1/authorization', (request, response) => {
 });
 
 app.listen(app.get('port'), () => {
+  /* eslint-disable */
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
