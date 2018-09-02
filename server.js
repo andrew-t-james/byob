@@ -32,7 +32,7 @@ const checkAuth = (req, res, next) => {
   });
 };
 
-app.get('/api/v1/users', (request, response) => {
+app.get('/api/v1/users', checkAuth, (request, response) => {
   database('users').select()
     .then((users) => (
       response.status(200).json(users)
@@ -42,7 +42,22 @@ app.get('/api/v1/users', (request, response) => {
     ));
 });
 
-app.post('/api/v1/users', (request, response) => {
+app.get('/api/v1/users/:id', checkAuth, (request, response) => {
+  const { id } = request.params;
+
+  database('users').where('id', id).select()
+    .then(users => {
+      if (users.length) {
+        return response.status(200).json(users);
+      }
+      return response.status(404).json({error: '404: User not found'});
+    })
+    .catch(() => (
+      response.status(500).send({'Error': '500: Internal server error'})
+    ));
+});
+
+app.post('/api/v1/users', checkAuth, (request, response) => {
   const user = request.body;
 
   for (let requiredParameters of [
@@ -65,25 +80,20 @@ app.post('/api/v1/users', (request, response) => {
     ));
 });
 
-app.delete('/api/v1/users/:id', (request, response, next) => {
+app.patch('/api/vi/users/:id', checkAuth, (request, response) => {
+  const { id } = request.params;
 
-  queries.getSingle(request.params.id)
-    .then((user) => {
-      queries.deleteUser(request.params.id)
-        .then(() => {
-          response.status(200).json(user);
-        })
-        .catch((error) => {
-          next(error);
-        });
-    }).catch((error) => {
-      next(error);
-    });
+  database('users').where('id', id).update(request.body)
+    .then(updated => {
+      if (!updated) {
+        return response.status(422).json({error: '422: Please provide a valid user id'});
+      }
+      return response.status(201).json(updated);
+    })
+    .catch(error => (
+      response.status(500).json({error: `500: Internal server error: ${error}`})
+    ));
 });
-
-
-
-
 
 app.get('/api/v1/saved_routes', (request, response) => {
   database('saved_routes').select()

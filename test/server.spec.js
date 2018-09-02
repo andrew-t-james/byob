@@ -59,34 +59,15 @@ describe('API routes', () => {
     });
   });
 
-  describe('DELETE /api/vq1/users/:id', () => {
-    it('should delete a user', done => {
+  describe('GET /api/v1/users/:id', () => {
+    it('should return a single user', done => {
       chai.request(server)
-        .delete('/api/v1/user/1')
+        .get('/api/v1/users/1')
         .end((err, response) => {
           response.should.have.status(200);
-          response.should.be.json;
-          response.body.should.be.a('object');
-          response.body.should.have.property('first_name');
-          response.body.first_name.should.equal('Ty');
-          response.body.should.have.property('last_name');
-          response.body.last_name.should.equal('Tanic');
-          chai.request(server)
-            .get('/api/v1/users')
-            .end((err, response) => {
-              response.should.have.status(200);
-              response.should.be.json;
-              response.body.should.be.a('array');
-              response.body.length.should.equal(29);
-              response.body[0].should.have.property('first_name');
-              response.body[0].first_name.should.equal('Will');
-              response.body[0].should.have.property('last_name');
-              response.body[0].last_name.should.equal('Smith');
-              done();
-            });
-        });
-    });
-  });
+        })
+    })
+  })
 
   describe('GET /api/v1/saved_routes', () => {
     it('should return all saved routes', done => {
