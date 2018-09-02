@@ -23,7 +23,7 @@
         "allowSingleLine": true
       }
     ],
-    "camelcase": "warn",
+    "camelcase": "off",
     "comma-dangle": ["error", "never"],
     "comma-spacing": [
       "error",
