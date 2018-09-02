@@ -24,6 +24,7 @@ describe('API routes', () => {
     it('should return all users', done => {
       chai.request(server)
         .get('/api/v1/users')
+
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
@@ -40,7 +41,37 @@ describe('API routes', () => {
     });
   });
 
+  describe('GET /api/v1/users/:id', () => {
+    it('should return a single user', done => {
+      chai.request(server)
+        .get('/api/v1/users/1')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body[0].should.have.property('first_name');
+          response.body[0].first_name.should.equal('Ty');
+          response.body[0].should.have.property('last_name');
+          response.body[0].last_name.should.equal('Tanic');
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(1);
+          done();
+        });
+    });
+  });
+
   describe('POST /api/v1/users', () => {
+    beforeEach(done => {
+      knex.migrate.rollback()
+        .then(() => {
+          knex.migrate.latest()
+            .then(() => knex.seed.run()
+              .then(() => {
+                done();
+              }));
+        });
+    });
+
     it('should create a new user', done => {
       chai.request(server)
         .post('/api/v1/users')
@@ -48,7 +79,7 @@ describe('API routes', () => {
           first_name: 'Bob',
           last_name: 'Loblaw'
         })
-        .end(function(err, response) {
+        .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
           response.body.should.be.a('object');
@@ -59,15 +90,20 @@ describe('API routes', () => {
     });
   });
 
-  describe('GET /api/v1/users/:id', () => {
-    it('should return a single user', done => {
+  describe('PATCH /api/v1/users/:id', () => {
+    it('should patch a users data', done => {
       chai.request(server)
-        .get('/api/v1/users/1')
-        .end((err, response) => {
-          response.should.have.status(200);
+        .patch('/api/v1/users/1')
+        .send({
+          first_name: 'Tyler'
         })
-    })
-  })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          done();
+        });
+    });
+  });
 
   describe('GET /api/v1/saved_routes', () => {
     it('should return all saved routes', done => {

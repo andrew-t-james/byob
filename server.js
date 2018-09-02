@@ -5,8 +5,6 @@ require('dotenv').config();
 
 const app = express();
 
-const queries = require('./db/queries');
-
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
@@ -37,7 +35,7 @@ const checkAuth = (req, res, next) => {
   });
 };
 
-app.get('/api/v1/users', checkAuth, (request, response) => {
+app.get('/api/v1/users', (request, response) => {
   database('users').select()
     .then((users) => (
       response.status(200).json(users)
@@ -47,13 +45,13 @@ app.get('/api/v1/users', checkAuth, (request, response) => {
     ));
 });
 
-app.get('/api/v1/users/:id', checkAuth, (request, response) => {
+app.get('/api/v1/users/:id', (request, response) => {
   const { id } = request.params;
 
   database('users').where('id', id).select()
-    .then(users => {
-      if (users.length) {
-        return response.status(200).json(users);
+    .then(user => {
+      if (user) {
+        return response.status(200).json(user);
       }
       return response.status(404).json({error: '404: User not found'});
     })
@@ -62,7 +60,7 @@ app.get('/api/v1/users/:id', checkAuth, (request, response) => {
     ));
 });
 
-app.post('/api/v1/users', checkAuth, (request, response) => {
+app.post('/api/v1/users', (request, response) => {
   const user = request.body;
 
   for (let requiredParameters of [
@@ -85,7 +83,7 @@ app.post('/api/v1/users', checkAuth, (request, response) => {
     ));
 });
 
-app.patch('/api/vi/users/:id', checkAuth, (request, response) => {
+app.patch('/api/vi/users/:id', (request, response) => {
   const { id } = request.params;
 
   database('users').where('id', id).update(request.body)
