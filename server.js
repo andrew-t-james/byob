@@ -16,6 +16,11 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('secretKey', process.env.SECRET_KEY);
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.sendFile('index.html');
+});
 
 const checkAuth = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -164,8 +169,8 @@ app.delete('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response
     .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
 });
 
-
 app.post('/api/v1/authorization', (request, response) => {
+  console.log(request.body);
   const user = request.body;
 
   for (const requiredParam of ['email']) {
