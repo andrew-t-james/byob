@@ -14,6 +14,11 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('secretKey', process.env.SECRET_KEY);
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.sendFile('index.html');
+});
 
 const checkAuth = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -40,6 +45,21 @@ app.get('/api/v1/users', (request, response) => {
     ));
 });
 
+app.get('/api/v1/users/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('users').where('id', id).select()
+    .then(user => {
+      if (user.length) {
+        return response.status(200).json(user);
+      }
+      return response.status(404).json({error: '404: User not found'});
+    })
+    .catch(() => (
+      response.status(500).send({'Error': '500: Internal server error'})
+    ));
+});
+
 app.post('/api/v1/users', (request, response) => {
   const user = request.body;
 
@@ -49,7 +69,7 @@ app.post('/api/v1/users', (request, response) => {
   ]) {
     if (!user[requiredParameters]) {
       return response
-        .status(422)
+        .status(404)
         .send({error: `Expected format: { name: <String> }.
         You're missing a "${requiredParameters}" property.`});
     }
@@ -63,14 +83,20 @@ app.post('/api/v1/users', (request, response) => {
     ));
 });
 
-app.delete('/api/v1/users', (request, response) => {
-  database('users').where('id', request.params.id).del()
-    .then(user => user);
+app.patch('/api/v1/users/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('users').where('id', id).update(request.body)
+    .then(updated => {
+      if (!updated) {
+        return response.status(422).json({error: '422: Please provide a valid user id'});
+      }
+      return response.status(201).json(updated);
+    })
+    .catch(error => (
+      response.status(500).json({error: `500: Internal server error: ${error}`})
+    ));
 });
-
-
-
-
 
 app.get('/api/v1/saved_routes', (request, response) => {
   database('saved_routes').select()
@@ -151,8 +177,8 @@ app.delete('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response
     .catch(error => response.status(500).json({error: `500: Internal Server Error: ${error}`}));
 });
 
-
 app.post('/api/v1/authorization', (request, response) => {
+  console.log(request.body);
   const user = request.body;
 
   for (const requiredParam of ['email']) {
