@@ -6,6 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test mocha --exit",
     "start": "node server.js",
+    "lint": "eslint server.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
