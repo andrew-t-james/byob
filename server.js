@@ -27,9 +27,16 @@ const checkAuth = (req, res, next) => {
     return res.status(403).json({'error': 'You must be authorized to hit this endpoint.'});
   }
 
-  jwt.verify(token, app.get('secretKey'), (err, decode) => {
-    if (err) {
-      return res.status(403).json({'error': 'Invalid token.'});
+  jwt.verify(token, app.get('secretKey'), (error, decode) => {
+    const userEmail = decode.user.email;
+    const regex = (/^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\.)?[a-zA-Z]+\.)?(turing)\.io$/g);
+
+    if (error) {
+      return res.status(403).json({'error': `Oops we got an error: ${error}`});
+    }
+
+    if (!regex.test(userEmail)) {
+      return res.status(403).json({'error': 'You are not authorized to complete this transaction.'});
     }
     next();
   });
@@ -148,13 +155,19 @@ app.post('/api/v1/saved_routes/:user_id', savedRoutesErrorHandling, checkAuth, (
       }
       return response.status(201).json(newRoute);
     })
-    .catch(error => response.status(500).json({ error: 'Internal Server Error Unable to Process Request' }));
+    .catch(error => response.status(500).json({ error: `Internal Server Error: ${error}`}));
 });
 
 app.patch('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response) => {
   const { saved_route_id } = request.params;
 
-  database('saved_routes').where('id', saved_route_id).update(request.body)
+  const propsToUpdate = {
+    name: request.body.name,
+    start_location: request.body.start_location,
+    end_location: request.body.end_location
+  };
+
+  database('saved_routes').where('id', saved_route_id).update(propsToUpdate)
     .then(updated => {
       if (!updated) {
         return response.status(422).json({error: '422: Please provide a valid route id.'});
@@ -178,10 +191,9 @@ app.delete('/api/v1/saved_routes/:saved_route_id', checkAuth, (request, response
 });
 
 app.post('/api/v1/authorization', (request, response) => {
-  console.log(request.body);
   const user = request.body;
 
-  for (const requiredParam of ['email']) {
+  for (const requiredParam of ['email', 'app_name']) {
     if (!user[requiredParam]) {
       return response.status(422).json({
         error: `Expected format: { property: <String> }. You're missing a ${requiredParam} property.`
@@ -198,6 +210,7 @@ app.post('/api/v1/authorization', (request, response) => {
 });
 
 app.listen(app.get('port'), () => {
+  /* eslint-disable */
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
