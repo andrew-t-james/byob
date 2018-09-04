@@ -70,10 +70,7 @@ app.get('/api/v1/users/:id', (request, response) => {
 app.post('/api/v1/users', (request, response) => {
   const user = request.body;
 
-  for (let requiredParameters of [
-    'first_name',
-    'last_name'
-  ]) {
+  for (let requiredParameters of ['first_name', 'last_name']) {
     if (!user[requiredParameters]) {
       return response
         .status(404)
